@@ -1,5 +1,7 @@
 package ua.hudyma.util;
 
+import ua.hudyma.enums.EntityType;
+
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -67,8 +69,8 @@ public class IdGenerator {
                 .toString();
     }
 
-    public static String generateSenderCode() {
-        return "SE" + generateRandomDigits(10);
+    public static String generateSenderCode(EntityType type) {
+        return "SE." + type.name().substring(0,2) + generateRandomDigits(8);
     }
 
     public static String generateVendorCode() {

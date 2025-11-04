@@ -15,7 +15,7 @@ public class Sender {
     private Long id;
     @NaturalId
     @Column(unique = true)
-    private String senderCode = IdGenerator.generateSenderCode();
+    private String senderCode;
     @Enumerated(EnumType.STRING)
     private EntityType entityType;
     @Embedded

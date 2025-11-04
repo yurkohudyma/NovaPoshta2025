@@ -17,7 +17,9 @@ public class Addressee {
     @Column(unique = true)
     private String addresseeCode = IdGenerator.generateAddresseeCode();
     @Enumerated(EnumType.STRING)
-    private EntityType addresseeType;
+    private EntityType entityType;
     @Embedded
     private Profile profile;
+
+    //todo bind senders and addressees with Post Units
 }
