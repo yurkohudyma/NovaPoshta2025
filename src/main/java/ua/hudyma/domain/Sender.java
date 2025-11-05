@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
 import ua.hudyma.enums.EntityType;
-import ua.hudyma.util.IdGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "senders")
@@ -20,4 +22,6 @@ public class Sender {
     private EntityType entityType;
     @Embedded
     private Profile profile;
+    @OneToMany(mappedBy = "sender")
+    private List<Delivery> deliveryList = new ArrayList<>();
 }

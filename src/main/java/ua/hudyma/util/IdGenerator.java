@@ -12,6 +12,14 @@ public class IdGenerator {
     private final static List<String> gsmCodesList = List.of("67", "68", "50", "96", "98", "95", "99");
     private final static SecureRandom secureRandom = new SecureRandom();
 
+    public static Integer generateCityCode() {
+        return generateRandomDigits();
+    }
+
+    public static Integer generateRandomDigits() {
+        return secureRandom.nextInt(100);
+    }
+
     public static LocalDate generateIssuedOn() {
         var today = LocalDate.now();
         int daysBack = new SecureRandom().nextInt(365 * 10);
@@ -19,7 +27,11 @@ public class IdGenerator {
     }
 
     public static String generatePhoneNumber() {
-        return "+380" + getRandomGSMCode() + generateRandomDigits(8);
+        return "+380" + getRandomGSMCode() + generateRandomDigits(7);
+    }
+
+    public static String generateTtn() {
+        return "2045" + generateRandomDigits(10);
     }
 
     private static String getRandomGSMCode() {

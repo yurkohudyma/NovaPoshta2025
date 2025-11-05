@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ua.hudyma.enums.EntityType;
-import ua.hudyma.service.AddresseService;
+import ua.hudyma.service.AddresseeService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/addressees")
 public class AddresseeController {
-    private final AddresseService addresseService;
+    private final AddresseeService addresseService;
 
     @GetMapping
     public ResponseEntity<String> createBatchAddressees (

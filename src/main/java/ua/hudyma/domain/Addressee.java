@@ -6,6 +6,9 @@ import org.hibernate.annotations.NaturalId;
 import ua.hudyma.enums.EntityType;
 import ua.hudyma.util.IdGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "addressees")
 @Data
@@ -20,6 +23,6 @@ public class Addressee {
     private EntityType entityType;
     @Embedded
     private Profile profile;
-
-    //todo bind senders and addressees with Post Units
+    @OneToMany(mappedBy = "addressee")
+    private List<Delivery> deliveryList = new ArrayList<>();
 }

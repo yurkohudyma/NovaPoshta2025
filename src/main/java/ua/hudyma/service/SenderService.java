@@ -4,6 +4,7 @@ import com.devskiller.jfairy.Fairy;
 import com.devskiller.jfairy.producer.company.Company;
 import com.devskiller.jfairy.producer.person.Address;
 import com.devskiller.jfairy.producer.person.Person;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,12 @@ public class SenderService {
                 .toList();
         senderRepository.saveAll(senders);
         log.info("::: SUCC created {} of type {}", quantity, type);
+    }
+
+    public Sender getById(Long senderId) {
+        return senderRepository.findById(senderId).orElseThrow(
+                () -> new EntityNotFoundException
+                        ("Sender " + senderId + " NOT FOUND"));
     }
 
     private Sender createPersonSender() {

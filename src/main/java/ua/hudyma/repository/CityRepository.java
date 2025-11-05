@@ -1,0 +1,7 @@
+package ua.hudyma.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import ua.hudyma.domain.City;
+
+public interface CityRepository extends JpaRepository<City, Long> {
+}
