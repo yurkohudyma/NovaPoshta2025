@@ -9,6 +9,7 @@ import ua.hudyma.domain.City;
 import ua.hudyma.domain.DeliveryUnit;
 import ua.hudyma.domain.WorkSchedule;
 import ua.hudyma.enums.DeliveryUnitReqDto;
+import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
 import ua.hudyma.repository.DeliveryUnitRepository;
 
 @Service
@@ -21,6 +22,10 @@ public class DeliveryUnitService {
 
     @Transactional
     public void createDeliveryUnit(DeliveryUnitReqDto dto) {
+        if (dto == null || checkObligatoryFields(dto)){
+            throw new DtoObligatoryFieldsAreMissingException("DeliveryReqDto cannot be NULL " +
+                    "or missing obigatory dto fields");
+        }
         var deliveryUnit = new DeliveryUnit();
         var city = cityService.getCityByID (dto.cityId());
         populateFields(dto, deliveryUnit, city);
@@ -51,5 +56,17 @@ public class DeliveryUnitService {
         return deliveryUnitRepository.findById(shippedFromId).orElseThrow(
                 () -> new EntityNotFoundException
                         ("Delivery Unit " + shippedFromId + " NOT FOUND"));
+    }
+
+    private boolean checkObligatoryFields(DeliveryUnitReqDto dto) {
+        return  dto.unitNumber() == null ||
+                dto.unitAddress() == null ||
+                dto.cityId() == null ||
+                dto.maxWeightAccepted() == null ||
+                dto.maxLength() == null ||
+                dto.maxWidth() == null ||
+                dto.maxHeight() == null ||
+                dto.latitude() == null ||
+                dto.longitude() == null;
     }
 }

@@ -3,12 +3,16 @@ package ua.hudyma.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Delivery;
 import ua.hudyma.domain.DeliveryUnit;
 import ua.hudyma.dto.DeliveryReqDto;
+import ua.hudyma.enums.DistanceDto;
+import ua.hudyma.exception.DeliveryTolerancesExcessException;
 import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
 import ua.hudyma.repository.DeliveryRepository;
 import ua.hudyma.repository.DeliveryUnitRepository;
+import ua.hudyma.util.DistanceCalculator;
 import ua.hudyma.util.IdGenerator;
 
 import java.math.BigDecimal;
@@ -22,26 +26,68 @@ public class DeliveryService {
     private final SenderService senderService;
     private final AddresseeService addresseeService;
 
+    @Transactional
     public void createDelivery(DeliveryReqDto dto) {
         if (dto == null || checkObligatoryFields(dto)){
-            throw new DtoObligatoryFieldsAreMissingException("DeliveryReqDto cannot be NULL");
+            throw new DtoObligatoryFieldsAreMissingException("DeliveryReqDto cannot be NULL " +
+                    "or missing obigatory dto fields");
         }
+        var shippedFromUnit = deliveryUnitService.getById(dto.shippedFromId());
+        checkMaxWeightAndMeasurement(dto, shippedFromUnit);
         var delivery = new Delivery();
-        delivery.setShippedFrom(deliveryUnitService.getById(dto.shippedFromId()));
-        delivery.setDeliveredTo(deliveryUnitService.getById(dto.deliveredToId()));
+        delivery.setShippedFrom(shippedFromUnit);
+        var deliveredToUnit = deliveryUnitService.getById(dto.deliveredToId());
+        delivery.setDeliveredTo(deliveredToUnit);
         delivery.setSender(senderService.getById (dto.senderId()));
         delivery.setAddressee(addresseeService.getById (dto.addresseeId()));
-        delivery.setEstimatedDelivery(delivery.getCreatedOn().plusDays(2));
         delivery.setDeliveryCost(BigDecimal.valueOf(IdGenerator.generateRandomDigits()));
         delivery.setWeight(calculateWeightAndAcceptBigger (dto));
+        delivery.setDescription("Продукти");
+        delivery.setDeliveryCost(calculateDeliveryCost(delivery.getWeight(), shippedFromUnit, deliveredToUnit));
         deliveryRepository.save(delivery);
+        delivery.setEstimatedDelivery(delivery.getCreatedOn().plusDays(2));
         log.info("::: delivery {} CREATED", delivery.getTtn());
+    }
+
+    private static BigDecimal calculateDeliveryCost(Integer weight,
+                                             DeliveryUnit shippedFromUnit,
+                                             DeliveryUnit deliveredToUnit) {
+
+        return BigDecimal.valueOf(DistanceCalculator.haversine(
+                new DistanceDto(
+                shippedFromUnit.getLatitude(),
+                shippedFromUnit.getLatitude(),
+                deliveredToUnit.getLatitude(),
+                deliveredToUnit.getLongitude())) * weight / 100);
+    }
+
+    private static void checkMaxWeightAndMeasurement(DeliveryReqDto dto, DeliveryUnit shippedFromUnit) {
+        if(dto.physicalweight() > shippedFromUnit.getMaxWeightAccepted()){
+            throw new DeliveryTolerancesExcessException(
+                    "Max weight per unit = " + shippedFromUnit.getMaxWeightAccepted() +
+                            ", while required " + dto.physicalweight());
+        }
+        else if (dto.length() > shippedFromUnit.getMaxLength() ||
+                dto.width() > shippedFromUnit.getMaxWidth() ||
+                dto.height() > shippedFromUnit.getMaxHeight()){
+            throw new DeliveryTolerancesExcessException(
+                    "Delivery measurements could not be accepted due to unit restrictions: " +
+                            compileDeliveryMeasurementVsUnitTolerances (dto, shippedFromUnit));
+        }
+    }
+
+    private static String compileDeliveryMeasurementVsUnitTolerances(DeliveryReqDto dto, DeliveryUnit shippedFromUnit) {
+        return String.format("Delivery request (l/w/h): %d/%d/%d, unit requirement: %d/%d/%d",
+                dto.length(), dto.width(), dto.height(),
+                shippedFromUnit.getMaxLength(),
+                shippedFromUnit.getMaxWidth(),
+                shippedFromUnit.getMaxHeight());
     }
 
     private Integer calculateWeightAndAcceptBigger(DeliveryReqDto dto) {
         var volumeWeight = dto.height() * dto.height() * dto.length() / 4000;
         Integer physicalweight = dto.physicalweight();
-        log.info("Volume weight = {}, physical = {}" , volumeWeight, physicalweight);
+        log.info(":::: Volume weight = {}, physical = {}" , volumeWeight, physicalweight);
         return volumeWeight > physicalweight ? volumeWeight : physicalweight;
     }
 
@@ -56,8 +102,3 @@ public class DeliveryService {
                 dto.width() == null;
     }
 }
-//todo вимірювання ваги — фактичної та обʼємної.
-// Яка із них більша — ту й враховуємо.
-// Фактична вага - це звичайна вага.
-// Обʼємна вага - визначається габаритами відправлення.
-// висота х ширина х довжина / 4000 = обʼємна вага.

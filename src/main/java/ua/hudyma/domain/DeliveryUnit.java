@@ -20,7 +20,7 @@ public class DeliveryUnit {
     private Long id;
     @NaturalId
     @Column(unique = true)
-    private String digitalAddress; //todo cityNum + proprietory
+    private String digitalAddress;
     private Integer unitNumber;
     private String unitAddress;
     @ManyToOne
@@ -36,7 +36,7 @@ public class DeliveryUnit {
     private Integer maxLength;
     private Integer maxWidth;
     private Integer maxHeight;
-    @OneToOne(mappedBy = "deliveryUnit")
+    @OneToOne(mappedBy = "deliveryUnit", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorkSchedule workSchedule;
     @Column(precision = 38, scale = 15)
     private BigDecimal latitude;

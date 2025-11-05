@@ -11,8 +11,19 @@ import static java.time.LocalDateTime.now;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(DeliveryTolerancesExcessException.class)
+    public ResponseEntity<ErrorResponse> DeliveryTolerancesExcessException(
+            DeliveryTolerancesExcessException ex) {
+        var error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(DtoObligatoryFieldsAreMissingException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotCreatedException(
+    public ResponseEntity<ErrorResponse> DtoObligatoryFieldsAreMissingException(
             DtoObligatoryFieldsAreMissingException ex) {
         var error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
@@ -22,7 +33,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(EntityAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleEntityNotCreatedException(
+    public ResponseEntity<ErrorResponse> EntityAlreadyExistsException(
             EntityAlreadyExistsException ex) {
         var error = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),

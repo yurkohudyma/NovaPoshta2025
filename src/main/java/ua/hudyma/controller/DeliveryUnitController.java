@@ -18,7 +18,7 @@ public class DeliveryUnitController {
     private final DeliveryUnitService deliveryUnitService;
 
     @PostMapping
-    public ResponseEntity<String> createDelivery (@RequestBody DeliveryUnitReqDto dto){
+    public ResponseEntity<String> createDeliveryUnit (@RequestBody DeliveryUnitReqDto dto){
         deliveryUnitService.createDeliveryUnit (dto);
         return ResponseEntity.ok().build();
     }

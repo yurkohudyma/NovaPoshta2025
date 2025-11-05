@@ -34,6 +34,7 @@ public class Delivery {
     @ManyToOne
     @JoinColumn(name = "addressee_id")
     private Addressee addressee;
+    @Enumerated(value = EnumType.STRING)
     private DeliveryStatus deliveryStatus = DeliveryStatus.CREATED;
     @CreationTimestamp
     private LocalDateTime createdOn;
@@ -48,6 +49,7 @@ public class Delivery {
     private Integer weight;
     private Integer items = 1;
     private String description;
+    @Enumerated(value = EnumType.STRING)
     private DeliveryCostPayer deliveryCostPayer = DeliveryCostPayer.SENDER;
 
 }
