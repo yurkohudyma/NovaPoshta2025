@@ -20,4 +20,9 @@ public class WorkScheduleController {
         workScheduleService.createOrUpdateSchedule(dtoList, unitId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping
+    public ResponseEntity<List<ScheduleDto>> getUnitSchedule (@RequestParam String digitalAddress){
+        return ResponseEntity.ok(workScheduleService.fetchScheduleDtoListForUnit (digitalAddress));
+    }
 }

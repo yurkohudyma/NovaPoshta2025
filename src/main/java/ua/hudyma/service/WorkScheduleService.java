@@ -43,4 +43,13 @@ public class WorkScheduleService {
             log.info("::: Schedule {} UPDATED", scheduleOpt.getId());
         }
     }
+
+    public List<ScheduleDto> fetchScheduleDtoListForUnit(String digitalAddress) {
+        return workScheduleRepository
+                .findByDeliveryUnitId_DigitalAddress(digitalAddress)
+                .orElseThrow( () ->
+                        new EntityNotFoundException(
+                                "::: Unit " + digitalAddress + " NOT FOUND"))
+                .getScheduleDtoList();
+    }
 }
