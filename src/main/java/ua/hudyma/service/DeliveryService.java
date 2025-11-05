@@ -1,5 +1,6 @@
 package ua.hudyma.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -7,15 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Delivery;
 import ua.hudyma.domain.DeliveryUnit;
 import ua.hudyma.dto.DeliveryReqDto;
+import ua.hudyma.enums.DeliveryRespDto;
 import ua.hudyma.enums.DistanceDto;
 import ua.hudyma.exception.DeliveryTolerancesExcessException;
 import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
+import ua.hudyma.mapper.DeliveryMapper;
+import ua.hudyma.repository.AddresseRepository;
 import ua.hudyma.repository.DeliveryRepository;
-import ua.hudyma.repository.DeliveryUnitRepository;
+import ua.hudyma.repository.SenderRepository;
 import ua.hudyma.util.DistanceCalculator;
 import ua.hudyma.util.IdGenerator;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,9 @@ public class DeliveryService {
     private final DeliveryUnitService deliveryUnitService;
     private final SenderService senderService;
     private final AddresseeService addresseeService;
+    private final SenderRepository senderRepository;
+    private final AddresseRepository addresseeRepository;
+    private final DeliveryMapper deliveryMapper;
 
     @Transactional
     public void createDelivery(DeliveryReqDto dto) {
@@ -76,12 +84,29 @@ public class DeliveryService {
         }
     }
 
-    private static String compileDeliveryMeasurementVsUnitTolerances(DeliveryReqDto dto, DeliveryUnit shippedFromUnit) {
+    private static String compileDeliveryMeasurementVsUnitTolerances(DeliveryReqDto dto,
+                                                                     DeliveryUnit shippedFromUnit) {
         return String.format("Delivery request (l/w/h): %d/%d/%d, unit requirement: %d/%d/%d",
                 dto.length(), dto.width(), dto.height(),
                 shippedFromUnit.getMaxLength(),
                 shippedFromUnit.getMaxWidth(),
                 shippedFromUnit.getMaxHeight());
+    }
+
+    public List<DeliveryRespDto> getAllDeliveriesByUserCode(String userCode) {
+        var sender = senderRepository.findBySenderCode (userCode);
+        if (sender.isEmpty()){
+            var addressee = addresseeRepository.findByAddresseeCode (userCode);
+            if (addressee.isEmpty()){
+                throw new EntityNotFoundException(
+                        ":::: Neither SENDER nor ADDRESSEE has been recognised by userCode " + userCode);
+            }
+            var deliveryList = deliveryRepository.findAllByAddressee_AddresseeCode(userCode);
+            return deliveryMapper.toDtoList (deliveryList);
+        }
+        var deliveryList = deliveryRepository.findAllBySender_SenderCode(userCode);
+        return deliveryMapper.toDtoList(deliveryList);
+
     }
 
     private Integer calculateWeightAndAcceptBigger(DeliveryReqDto dto) {
