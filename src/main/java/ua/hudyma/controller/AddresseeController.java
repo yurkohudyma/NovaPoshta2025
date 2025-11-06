@@ -17,8 +17,8 @@ public class AddresseeController {
 
     @GetMapping
     public ResponseEntity<String> createBatchAddressees (
-            @RequestParam Integer quantity, @RequestParam EntityType type){
-        addresseService.createAddressee(quantity, type);
+            @RequestParam Integer quantity){
+        addresseService.createAddressee(quantity);
         return ResponseEntity.ok().build();
     }
 }

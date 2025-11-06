@@ -18,6 +18,9 @@ import ua.hudyma.util.IdGenerator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static ua.hudyma.util.IdGenerator.getRandomEnum;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -27,8 +30,8 @@ public class AddresseeService {
     private final Fairy fairy = Fairy.create();
 
     @Transactional
-    public void createAddressee(int quantity, EntityType type) {
-        Supplier<Addressee> addresseeSupplier = switch (type) {
+    public void createAddressee(int quantity) {
+        Supplier<Addressee> addresseeSupplier = switch (getRandomEnum(EntityType.class)) {
             case PERSON -> this::createPersonAddressee;
             case COMPANY -> this::createCompanyAddressee;
         };
@@ -37,7 +40,7 @@ public class AddresseeService {
                 .limit(quantity)
                 .toList();
         addresseRepository.saveAll(senders);
-        log.info("::: SUCC created {} of type {}", quantity, type);
+        log.info("::: SUCC created {} ADDRESSEES", quantity);
     }
 
     public Addressee getById(Long addresseeId) {
@@ -58,7 +61,7 @@ public class AddresseeService {
         var addressee = new Addressee();
         addressee.setEntityType(type);
         addressee.setProfile(profile);
-        addressee.setAddresseeCode(IdGenerator.generateSenderCode(type));
+        addressee.setAddresseeCode(IdGenerator.generateAddresseeCode(type));
         return addressee;
     }
     private Profile createPersonProfile(Person person) {

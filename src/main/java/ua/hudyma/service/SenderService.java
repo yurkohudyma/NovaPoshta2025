@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static ua.hudyma.util.IdGenerator.getRandomEnum;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -27,8 +29,8 @@ public class SenderService {
     private final Fairy fairy = Fairy.create();
 
     @Transactional
-    public void createSender(int quantity, EntityType type) {
-        Supplier<Sender> senderSupplier = switch (type) {
+    public void createSender(int quantity) {
+        Supplier<Sender> senderSupplier = switch (getRandomEnum(EntityType.class)) {
             case PERSON -> this::createPersonSender;
             case COMPANY -> this::createCompanySender;
         };
@@ -37,7 +39,7 @@ public class SenderService {
                 .limit(quantity)
                 .toList();
         senderRepository.saveAll(senders);
-        log.info("::: SUCC created {} of type {}", quantity, type);
+        log.info("::: SUCC created {} SENDERS", quantity);
     }
 
     public Sender getById(Long senderId) {

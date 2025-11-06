@@ -82,7 +82,7 @@ public class IdGenerator {
     }
 
     public static String generateSenderCode(EntityType type) {
-        return "SE." + type.name().substring(0,2) + generateRandomDigits(8);
+        return "SE." + type.name().substring(0,2) + "." + generateRandomDigits(8);
     }
 
     public static String generateVendorCode() {
@@ -93,8 +93,8 @@ public class IdGenerator {
         return "BU" + generateRandomDigits(10);
     }
 
-    public static String generateAddresseeCode() {
-        return "AD" + generateRandomDigits(10);
+    public static String generateAddresseeCode(EntityType type) {
+        return "AD."+ type.name().substring(0,2) + "." + generateRandomDigits(10);
     }
 
     public static <T extends Enum<T>> T getRandomEnum(Class<T> enumClass) {

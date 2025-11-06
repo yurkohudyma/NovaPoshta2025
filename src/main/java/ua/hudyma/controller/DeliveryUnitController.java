@@ -8,6 +8,8 @@ import ua.hudyma.enums.DeliveryUnitReqDto;
 import ua.hudyma.service.DeliveryService;
 import ua.hudyma.service.DeliveryUnitService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/units")
@@ -18,5 +20,10 @@ public class DeliveryUnitController {
     public ResponseEntity<String> createDeliveryUnit (@RequestBody DeliveryUnitReqDto dto){
         deliveryUnitService.createDeliveryUnit (dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<String>> getUsersDeliveryUnits (@RequestParam String userCode) {
+        return ResponseEntity.ok(deliveryUnitService.getUsersDeliveryUnits (userCode));
     }
 }

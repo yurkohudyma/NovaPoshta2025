@@ -18,7 +18,7 @@ public class Addressee {
     private Long id;
     @NaturalId
     @Column(unique = true)
-    private String addresseeCode = IdGenerator.generateAddresseeCode();
+    private String addresseeCode;
     @Enumerated(EnumType.STRING)
     private EntityType entityType;
     @Embedded

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ua.hudyma.enums.EntityType;
 import ua.hudyma.service.SenderService;
 
 @RestController
@@ -17,8 +16,8 @@ public class SenderController {
 
     @GetMapping
     public ResponseEntity<String> createBatchSenders (
-            @RequestParam Integer quantity, @RequestParam EntityType type){
-        senderService.createSender(quantity, type);
+            @RequestParam Integer quantity){
+        senderService.createSender(quantity);
         return ResponseEntity.ok().build();
     }
 }
