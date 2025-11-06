@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Delivery;
 import ua.hudyma.domain.DeliveryUnit;
 import ua.hudyma.dto.DeliveryReqDto;
+import ua.hudyma.enums.DeliveryCostPayer;
 import ua.hudyma.enums.DeliveryRespDto;
+import ua.hudyma.enums.DeliveryStatus;
 import ua.hudyma.enums.DistanceDto;
 import ua.hudyma.exception.DeliveryTolerancesExcessException;
 import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
@@ -106,7 +108,27 @@ public class DeliveryService {
         }
         var deliveryList = deliveryRepository.findAllBySender_SenderCode(userCode);
         return deliveryMapper.toDtoList(deliveryList);
+    }
 
+    @Transactional
+    public void redirectDelivery(String ttn, String newDigitalAddress) {
+        var delivery = deliveryRepository.findByTtn(ttn).orElseThrow(
+                () -> new EntityNotFoundException(":::: Delivery " + ttn + " DOES NOT exist"));
+        var newDeliveryUnit = deliveryUnitService.findByDigitalAddress(newDigitalAddress);
+        delivery.setDeliveredTo(newDeliveryUnit);
+        delivery.setDeliveryStatus(DeliveryStatus.REDIRECTED);
+    }
+
+    @Transactional
+    public void refuseDelivery(String ttn) {
+        var delivery = deliveryRepository.findByTtn(ttn).orElseThrow(
+                () -> new EntityNotFoundException(":::: Delivery " + ttn + " DOES NOT exist"));
+        var deliveryToUnit = delivery.getDeliveredTo();
+        var deliveryFromUnit = delivery.getShippedFrom();
+        delivery.setDeliveredTo(deliveryFromUnit);
+        delivery.setShippedFrom(deliveryToUnit);
+        delivery.setDeliveryStatus(DeliveryStatus.REFUSED);
+        delivery.setDeliveryCostPayer(DeliveryCostPayer.NOVAPOSHTA);
     }
 
     private Integer calculateWeightAndAcceptBigger(DeliveryReqDto dto) {

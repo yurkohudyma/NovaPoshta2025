@@ -28,4 +28,18 @@ public class DeliveryController {
         return ResponseEntity.ok(deliveryService
                 .getAllDeliveriesByUserCode (userCode));
     }
+
+    @PatchMapping("/refuse")
+    public ResponseEntity<String> refuseDelivery (@RequestParam String ttn){
+        deliveryService.refuseDelivery(ttn);
+        return ResponseEntity.ok("Delivery "+ ttn + " HAS been REFUSED");
+    }
+    @PatchMapping("/redirect")
+    public ResponseEntity<String> redirectDelivery (@RequestParam String ttn,
+                                                    @RequestParam String newDigitalAddress){
+        deliveryService.redirectDelivery(ttn, newDigitalAddress);
+        return ResponseEntity.ok("Delivery "+ ttn + " HAS been REDIRECTED");
+    }
+
+
 }

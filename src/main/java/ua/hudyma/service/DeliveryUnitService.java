@@ -59,6 +59,12 @@ public class DeliveryUnitService {
         deliveryUnit.setMaxWeightAccepted(dto.maxWeightAccepted());
     }
 
+    public DeliveryUnit findByDigitalAddress(String newDigitalAddress) {
+        return deliveryUnitRepository.findByDigitalAddress(newDigitalAddress)
+                .orElseThrow( () ->
+                        new EntityNotFoundException("::: Delivery Unit "+ newDigitalAddress + " DOES not exist"));
+    }
+
     public DeliveryUnit getById(Long shippedFromId) {
         return deliveryUnitRepository.findById(shippedFromId).orElseThrow(
                 () -> new EntityNotFoundException
@@ -66,7 +72,6 @@ public class DeliveryUnitService {
     }
 
     public List<String> getUsersDeliveryUnits(String userCode) {
-        Supplier<Exception> exception = EntityNotFoundException::new;
         var userPrefix = userCode.split("\\.")[0];
         return switch (userPrefix) {
             case "AD" -> deliveryUnitRepository.findAllDeliveredToUnitsPerAddressee(userCode)

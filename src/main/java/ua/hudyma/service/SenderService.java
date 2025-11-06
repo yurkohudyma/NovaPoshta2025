@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Profile;
 import ua.hudyma.domain.Sender;
 import ua.hudyma.enums.EntityType;
+import ua.hudyma.enums.SenderContactsDto;
+import ua.hudyma.repository.AddresseRepository;
 import ua.hudyma.repository.SenderRepository;
 import ua.hudyma.util.IdGenerator;
 
@@ -27,6 +29,7 @@ import static ua.hudyma.util.IdGenerator.getRandomEnum;
 public class SenderService {
     private final SenderRepository senderRepository;
     private final Fairy fairy = Fairy.create();
+    private final AddresseRepository addresseeRepository;
 
     @Transactional
     public void createSender(int quantity) {
@@ -40,6 +43,17 @@ public class SenderService {
                 .toList();
         senderRepository.saveAll(senders);
         log.info("::: SUCC created {} SENDERS", quantity);
+    }
+
+    public List<SenderContactsDto> fetchSenderContacts(String senderCode) {
+        return addresseeRepository
+                .findByDeliveryList_Sender_SenderCode(senderCode)
+                .stream()
+                .map(addressee ->
+                        new SenderContactsDto(
+                        addressee.getProfile().getName(),
+                        addressee.getProfile().getPhoneNumber()
+                        )).toList();
     }
 
     public Sender getById(Long senderId) {

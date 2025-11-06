@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import ua.hudyma.domain.DeliveryUnit;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DeliveryUnitRepository extends JpaRepository<DeliveryUnit, Long> {
     List<DeliveryUnit> findAllByFromDeliveryList_Sender_SenderCode(String userCode);
@@ -32,4 +33,6 @@ public interface DeliveryUnitRepository extends JpaRepository<DeliveryUnit, Long
                      """, nativeQuery = true)
     List<DeliveryUnit> findAllDeliveredToUnitsPerAddressee(@Param("userCode")
                                                                 String userCode);
+
+    Optional<DeliveryUnit> findByDigitalAddress(String newDigitalAddress);
 }
