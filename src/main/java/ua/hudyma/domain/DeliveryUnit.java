@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.checkerframework.checker.units.qual.C;
 import org.hibernate.annotations.NaturalId;
+import ua.hudyma.enums.UnitType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,6 +21,8 @@ public class DeliveryUnit {
     @NaturalId
     @Column(unique = true)
     private String digitalAddress;
+    @Enumerated(value = EnumType.STRING)
+    private UnitType unitType;
     private Integer unitNumber;
     private String unitAddress;
     @ManyToOne

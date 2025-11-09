@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ua.hudyma.domain.DeliveryUnit;
+import ua.hudyma.enums.UnitType;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,8 @@ import java.util.Optional;
 public interface DeliveryUnitRepository extends JpaRepository<DeliveryUnit, Long> {
     List<DeliveryUnit> findAllByFromDeliveryList_Sender_SenderCode(String userCode);
     List<DeliveryUnit> findAllByToDeliveryList_Addressee_AddresseeCode(String userCode);
+
+    List<DeliveryUnit> findAllByUnitType(UnitType unitType);
 
     @Query(value = """
             select

@@ -5,15 +5,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.hudyma.domain.*;
+import ua.hudyma.domain.City;
+import ua.hudyma.domain.DeliveryUnit;
+import ua.hudyma.domain.WorkSchedule;
 import ua.hudyma.enums.DeliveryUnitReqDto;
+import ua.hudyma.enums.DeliveryUnitsRespDto;
+import ua.hudyma.enums.UnitType;
 import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
-import ua.hudyma.repository.AddresseRepository;
+import ua.hudyma.mapper.DeliveryUnitMapper;
+import ua.hudyma.mapper.DeliveryUnitMapperImpl;
 import ua.hudyma.repository.DeliveryUnitRepository;
-import ua.hudyma.repository.SenderRepository;
 
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Objects;
+
+import static ua.hudyma.enums.UnitType.DEPARTMENT;
+import static ua.hudyma.enums.UnitType.POSTOMATE;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +28,8 @@ import java.util.function.Supplier;
 public class DeliveryUnitService {
     private final DeliveryUnitRepository deliveryUnitRepository;
     private final WorkScheduleRepository workScheduleRepository;
-    private final AddresseRepository addresseRepository;
     private final CityService cityService;
-    private final SenderRepository senderRepository;
+    private final DeliveryUnitMapper deliveryUnitMapper;
 
     @Transactional
     public void createDeliveryUnit(DeliveryUnitReqDto dto) {
@@ -37,6 +43,9 @@ public class DeliveryUnitService {
         deliveryUnitRepository.save(deliveryUnit);
         log.info(":::: Delivery Unit {} CREATED", deliveryUnit.getUnitAddress());
         var schedule = new WorkSchedule();
+        if (dto.dtoList() != null && !dto.dtoList().isEmpty()){
+            schedule.setScheduleDtoList(dto.dtoList());
+        }
         schedule.setDeliveryUnit(deliveryUnit);
         workScheduleRepository.save(schedule);
         deliveryUnit.setWorkSchedule(schedule);
@@ -47,6 +56,8 @@ public class DeliveryUnitService {
                                        DeliveryUnit deliveryUnit,
                                        City city) {
         deliveryUnit.setDigitalAddress(city.getCityCode() + "/" + dto.unitNumber());
+        UnitType unitType = dto.unitType();
+        deliveryUnit.setUnitType(Objects.requireNonNullElse(unitType, DEPARTMENT));
         deliveryUnit.setUnitNumber(dto.unitNumber());
         deliveryUnit.setUnitAddress(dto.unitAddress());
         deliveryUnit.setCity(city);
@@ -65,6 +76,15 @@ public class DeliveryUnitService {
                         new EntityNotFoundException("::: Delivery Unit "+ newDigitalAddress + " DOES not exist"));
     }
 
+    public List<DeliveryUnitsRespDto> getAllDepatmentUnits() {
+        return deliveryUnitMapper.toDtoList(deliveryUnitRepository.findAllByUnitType(DEPARTMENT));
+    }
+
+    public List<DeliveryUnitsRespDto> getAllPostomates() {
+        return deliveryUnitMapper.toDtoList(
+                deliveryUnitRepository.findAllByUnitType (POSTOMATE));
+    }
+
     public DeliveryUnit getById(Long shippedFromId) {
         return deliveryUnitRepository.findById(shippedFromId).orElseThrow(
                 () -> new EntityNotFoundException
@@ -77,10 +97,12 @@ public class DeliveryUnitService {
             case "AD" -> deliveryUnitRepository.findAllDeliveredToUnitsPerAddressee(userCode)
                     .stream()
                     .map(DeliveryUnit::getUnitAddress)
+                    .distinct()
                     .toList();
             case "SE" -> deliveryUnitRepository.findAllShippedFromUnitsPerSender(userCode)
                     .stream()
                     .map(DeliveryUnit::getUnitAddress)
+                    .distinct()
                     .toList();
             default -> throw new IllegalArgumentException("CASE scenario UNKNOWN");
         };

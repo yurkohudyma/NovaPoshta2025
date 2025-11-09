@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hudyma.dto.DeliveryReqDto;
 import ua.hudyma.enums.DeliveryUnitReqDto;
+import ua.hudyma.enums.DeliveryUnitsRespDto;
 import ua.hudyma.service.DeliveryService;
 import ua.hudyma.service.DeliveryUnitService;
 
@@ -25,5 +26,14 @@ public class DeliveryUnitController {
     @GetMapping
     public ResponseEntity<List<String>> getUsersDeliveryUnits (@RequestParam String userCode) {
         return ResponseEntity.ok(deliveryUnitService.getUsersDeliveryUnits (userCode));
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<DeliveryUnitsRespDto>> getAllDeliveryUnits () {
+        return ResponseEntity.ok(deliveryUnitService.getAllDepatmentUnits());
+    }
+
+    @GetMapping("/postomatesALL")
+    public ResponseEntity<List<DeliveryUnitsRespDto>> getAllPostomates () {
+        return ResponseEntity.ok(deliveryUnitService.getAllPostomates());
     }
 }
