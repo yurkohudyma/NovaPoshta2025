@@ -1,6 +1,7 @@
-package ua.hudyma.enums;
+package ua.hudyma.dto;
 
 import ua.hudyma.dto.ScheduleDto;
+import ua.hudyma.enums.UnitType;
 
 import java.math.BigDecimal;
 import java.util.List;

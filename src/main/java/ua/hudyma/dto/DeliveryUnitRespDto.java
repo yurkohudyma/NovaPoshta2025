@@ -1,10 +1,8 @@
-package ua.hudyma.enums;
-
-import ua.hudyma.dto.ScheduleDto;
+package ua.hudyma.dto;
 
 import java.util.List;
 
-public record DeliveryUnitsRespDto(
+public record DeliveryUnitRespDto(
         Integer unitNumber,
         String unitAddress,
         String digitalAddress,

@@ -1,8 +1,6 @@
 package ua.hudyma.util;
 
-import ua.hudyma.enums.DistanceDto;
-
-import java.math.BigDecimal;
+import ua.hudyma.dto.CurrentPositionDto;
 
 public class DistanceCalculator {
     private DistanceCalculator() {
@@ -10,7 +8,7 @@ public class DistanceCalculator {
 
     private static final double EARTH_RADIUS_KM = 6371;
 
-    public static double haversine(DistanceDto dto) {
+    public static double haversine(CurrentPositionDto dto) {
         var lat1 = dto.shipLat().doubleValue();
         var lon1 = dto.shipLon().doubleValue();
         var lat2 = dto.deliverLat().doubleValue();

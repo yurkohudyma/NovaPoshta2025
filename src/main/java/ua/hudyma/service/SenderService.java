@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Profile;
 import ua.hudyma.domain.Sender;
 import ua.hudyma.enums.EntityType;
-import ua.hudyma.enums.SenderContactsDto;
+import ua.hudyma.dto.SenderContactsDto;
 import ua.hudyma.repository.AddresseRepository;
 import ua.hudyma.repository.SenderRepository;
 import ua.hudyma.util.IdGenerator;

@@ -9,9 +9,10 @@ import ua.hudyma.domain.Delivery;
 import ua.hudyma.domain.DeliveryUnit;
 import ua.hudyma.dto.DeliveryReqDto;
 import ua.hudyma.enums.DeliveryCostPayer;
-import ua.hudyma.enums.DeliveryRespDto;
+import ua.hudyma.dto.DeliveryRespDto;
 import ua.hudyma.enums.DeliveryStatus;
-import ua.hudyma.enums.DistanceDto;
+import ua.hudyma.dto.CurrentPositionDto;
+import ua.hudyma.enums.DeliveryTrackDto;
 import ua.hudyma.exception.DeliveryTolerancesExcessException;
 import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
 import ua.hudyma.mapper.DeliveryMapper;
@@ -54,9 +55,19 @@ public class DeliveryService {
         delivery.setWeight(calculateWeightAndAcceptBigger (dto));
         delivery.setDescription("Продукти");
         delivery.setDeliveryCost(calculateDeliveryCost(delivery.getWeight(), shippedFromUnit, deliveredToUnit));
+        delivery.setMeasurements(compileMeasurements(dto));
+        delivery.setCurrentPositionDto(retrieveStartingPosition(shippedFromUnit));
         deliveryRepository.save(delivery);
         delivery.setEstimatedDelivery(delivery.getCreatedOn().plusDays(2));
         log.info("::: delivery {} CREATED", delivery.getTtn());
+    }
+
+    private CurrentPositionDto retrieveStartingPosition(DeliveryUnit shippedFromUnit) {
+        return new CurrentPositionDto(
+                shippedFromUnit.getLatitude(),
+                shippedFromUnit.getLongitude(),
+                null,
+                null);
     }
 
     private static BigDecimal calculateDeliveryCost(Integer weight,
@@ -64,7 +75,7 @@ public class DeliveryService {
                                              DeliveryUnit deliveredToUnit) {
 
         return BigDecimal.valueOf(DistanceCalculator.haversine(
-                new DistanceDto(
+                new CurrentPositionDto(
                 shippedFromUnit.getLatitude(),
                 shippedFromUnit.getLatitude(),
                 deliveredToUnit.getLatitude(),
@@ -131,6 +142,12 @@ public class DeliveryService {
         delivery.setDeliveryCostPayer(DeliveryCostPayer.NOVAPOSHTA);
     }
 
+    public DeliveryTrackDto trackDelivery(String ttn) {
+        return deliveryMapper.toTrackDto(deliveryRepository.findByTtn(ttn)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Delivery " + ttn + " DOES NOT exist")));
+    }
+
     private Integer calculateWeightAndAcceptBigger(DeliveryReqDto dto) {
         var volumeWeight = dto.height() * dto.height() * dto.length() / 4000;
         Integer physicalweight = dto.physicalweight();
@@ -147,5 +164,9 @@ public class DeliveryService {
                 dto.length() == null ||
                 dto.height() == null ||
                 dto.width() == null;
+    }
+
+    private String compileMeasurements(DeliveryReqDto dto) {
+        return String.format("%d/%d/%d", dto.length(), dto.width(), dto.height());
     }
 }

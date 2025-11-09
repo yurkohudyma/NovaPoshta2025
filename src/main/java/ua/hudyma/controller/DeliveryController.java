@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hudyma.dto.DeliveryReqDto;
-import ua.hudyma.enums.DeliveryRespDto;
+import ua.hudyma.dto.DeliveryRespDto;
+import ua.hudyma.enums.DeliveryTrackDto;
 import ua.hudyma.service.DeliveryService;
 
 import java.util.List;
@@ -39,6 +40,13 @@ public class DeliveryController {
                                                     @RequestParam String newDigitalAddress){
         deliveryService.redirectDelivery(ttn, newDigitalAddress);
         return ResponseEntity.ok("Delivery "+ ttn + " HAS been REDIRECTED");
+    }
+
+    @GetMapping("/track")
+    public ResponseEntity<DeliveryTrackDto> trackDelivery (
+            @RequestParam String ttn){
+        return ResponseEntity.ok(deliveryService
+                .trackDelivery (ttn));
     }
 
 

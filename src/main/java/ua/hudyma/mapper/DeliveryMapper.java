@@ -1,13 +1,9 @@
 package ua.hudyma.mapper;
 
 import ua.hudyma.domain.Delivery;
-import ua.hudyma.enums.DeliveryRespDto;
+import ua.hudyma.dto.DeliveryRespDto;
+import ua.hudyma.enums.DeliveryTrackDto;
 
-import java.util.List;
-
-public interface DeliveryMapper {
-
-    DeliveryRespDto toDto (Delivery delivery);
-    List<DeliveryRespDto> toDtoList (List<Delivery> deliveryList);
-
+public interface DeliveryMapper extends EntityMapper<DeliveryRespDto, Delivery> {
+    DeliveryTrackDto toTrackDto (Delivery delivery);
 }

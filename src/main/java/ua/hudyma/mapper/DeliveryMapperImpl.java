@@ -2,7 +2,8 @@ package ua.hudyma.mapper;
 
 import org.springframework.stereotype.Component;
 import ua.hudyma.domain.Delivery;
-import ua.hudyma.enums.DeliveryRespDto;
+import ua.hudyma.dto.DeliveryRespDto;
+import ua.hudyma.enums.DeliveryTrackDto;
 
 import java.util.List;
 
@@ -31,5 +32,18 @@ public class DeliveryMapperImpl implements DeliveryMapper {
     @Override
     public List<DeliveryRespDto> toDtoList(List<Delivery> deliveryList) {
         return deliveryList.stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public DeliveryTrackDto toTrackDto(Delivery delivery) {
+        return new DeliveryTrackDto(
+                delivery.getCurrentPositionDto(),
+                delivery.getShippedFrom().getUnitNumber() + "/" + delivery.getShippedFrom().getUnitAddress(),
+                delivery.getDescription(),
+                delivery.getWeight(),
+                delivery.getMeasurements(),
+                delivery.getDeliveryCostPayer(),
+                delivery.getEstimatedDelivery()
+        );
     }
 }

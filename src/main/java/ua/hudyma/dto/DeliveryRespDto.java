@@ -1,4 +1,7 @@
-package ua.hudyma.enums;
+package ua.hudyma.dto;
+
+import ua.hudyma.enums.DeliveryCostPayer;
+import ua.hudyma.enums.DeliveryStatus;
 
 import java.math.BigDecimal;
 

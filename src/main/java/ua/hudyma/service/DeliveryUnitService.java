@@ -8,19 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.City;
 import ua.hudyma.domain.DeliveryUnit;
 import ua.hudyma.domain.WorkSchedule;
-import ua.hudyma.enums.DeliveryUnitReqDto;
-import ua.hudyma.enums.DeliveryUnitsRespDto;
+import ua.hudyma.dto.DeliveryUnitReqDto;
+import ua.hudyma.dto.DeliveryUnitRespDto;
 import ua.hudyma.enums.UnitType;
 import ua.hudyma.exception.DtoObligatoryFieldsAreMissingException;
 import ua.hudyma.mapper.DeliveryUnitMapper;
-import ua.hudyma.mapper.DeliveryUnitMapperImpl;
 import ua.hudyma.repository.DeliveryUnitRepository;
 
 import java.util.List;
 import java.util.Objects;
 
-import static ua.hudyma.enums.UnitType.DEPARTMENT;
-import static ua.hudyma.enums.UnitType.POSTOMATE;
+import static ua.hudyma.enums.UnitType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -76,11 +74,11 @@ public class DeliveryUnitService {
                         new EntityNotFoundException("::: Delivery Unit "+ newDigitalAddress + " DOES not exist"));
     }
 
-    public List<DeliveryUnitsRespDto> getAllDepatmentUnits() {
+    public List<DeliveryUnitRespDto> getAllDepatmentUnits() {
         return deliveryUnitMapper.toDtoList(deliveryUnitRepository.findAllByUnitType(DEPARTMENT));
     }
 
-    public List<DeliveryUnitsRespDto> getAllPostomates() {
+    public List<DeliveryUnitRespDto> getAllPostomates() {
         return deliveryUnitMapper.toDtoList(
                 deliveryUnitRepository.findAllByUnitType (POSTOMATE));
     }

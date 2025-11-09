@@ -3,10 +3,8 @@ package ua.hudyma.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.hudyma.dto.DeliveryReqDto;
-import ua.hudyma.enums.DeliveryUnitReqDto;
-import ua.hudyma.enums.DeliveryUnitsRespDto;
-import ua.hudyma.service.DeliveryService;
+import ua.hudyma.dto.DeliveryUnitReqDto;
+import ua.hudyma.dto.DeliveryUnitRespDto;
 import ua.hudyma.service.DeliveryUnitService;
 
 import java.util.List;
@@ -28,12 +26,12 @@ public class DeliveryUnitController {
         return ResponseEntity.ok(deliveryUnitService.getUsersDeliveryUnits (userCode));
     }
     @GetMapping("/all")
-    public ResponseEntity<List<DeliveryUnitsRespDto>> getAllDeliveryUnits () {
+    public ResponseEntity<List<DeliveryUnitRespDto>> getAllDeliveryUnits () {
         return ResponseEntity.ok(deliveryUnitService.getAllDepatmentUnits());
     }
 
     @GetMapping("/postomatesALL")
-    public ResponseEntity<List<DeliveryUnitsRespDto>> getAllPostomates () {
+    public ResponseEntity<List<DeliveryUnitRespDto>> getAllPostomates () {
         return ResponseEntity.ok(deliveryUnitService.getAllPostomates());
     }
 }

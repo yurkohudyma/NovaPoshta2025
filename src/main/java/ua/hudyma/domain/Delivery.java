@@ -1,10 +1,11 @@
 package ua.hudyma.domain;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
+import org.hibernate.type.SqlTypes;
+import ua.hudyma.dto.CurrentPositionDto;
 import ua.hudyma.enums.DeliveryCostPayer;
 import ua.hudyma.enums.DeliveryStatus;
 import ua.hudyma.util.IdGenerator;
@@ -49,7 +50,11 @@ public class Delivery {
     private Integer weight;
     private Integer items = 1;
     private String description;
+    private String measurements;
     @Enumerated(value = EnumType.STRING)
     private DeliveryCostPayer deliveryCostPayer = DeliveryCostPayer.SENDER;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json", name = "currente_pos_dto")
+    private CurrentPositionDto currentPositionDto;
 
 }

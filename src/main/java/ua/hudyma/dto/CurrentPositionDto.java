@@ -1,8 +1,8 @@
-package ua.hudyma.enums;
+package ua.hudyma.dto;
 
 import java.math.BigDecimal;
 
-public record DistanceDto(
+public record CurrentPositionDto(
         BigDecimal shipLat,
         BigDecimal shipLon,
         BigDecimal deliverLat,

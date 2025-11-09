@@ -1,4 +1,4 @@
-package ua.hudyma.enums;
+package ua.hudyma.dto;
 
 public record SenderContactsDto(
         String contactName,
