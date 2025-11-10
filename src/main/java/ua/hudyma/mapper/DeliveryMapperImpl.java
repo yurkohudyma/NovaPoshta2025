@@ -5,6 +5,7 @@ import ua.hudyma.domain.Delivery;
 import ua.hudyma.dto.DeliveryRespDto;
 import ua.hudyma.enums.DeliveryTrackDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -43,7 +44,16 @@ public class DeliveryMapperImpl implements DeliveryMapper {
                 delivery.getWeight(),
                 delivery.getMeasurements(),
                 delivery.getDeliveryCostPayer(),
-                delivery.getEstimatedDelivery()
+                normaliseDate(delivery.getEstimatedDelivery())
         );
+    }
+
+    private String normaliseDate(LocalDateTime estimatedDelivery) {
+        return String.format("%d-%s-%d %d:%d",
+                estimatedDelivery.getDayOfMonth(),
+                estimatedDelivery.getMonth().getValue(),
+                estimatedDelivery.getYear(),
+                estimatedDelivery.getHour(),
+                estimatedDelivery.getMinute());
     }
 }

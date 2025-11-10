@@ -1,5 +1,6 @@
 package ua.hudyma.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -43,6 +44,7 @@ public class Delivery {
     private LocalDateTime updatedOn;
     private LocalDateTime sentOn;
     private LocalDateTime deliveredOn;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime estimatedDelivery;
     private LocalDateTime payableStorageSince;
     private BigDecimal declaredValue = BigDecimal.valueOf(200);
